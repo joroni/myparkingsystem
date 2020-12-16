@@ -17,6 +17,7 @@ class CustomerList extends Component {
     fetch('api/customers')
       .then(response => response.json())
       .then(data => this.setState({customers: data, isLoading: false}));
+     
   }
 
   async remove(id) {

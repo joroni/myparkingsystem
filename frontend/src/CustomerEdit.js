@@ -13,14 +13,18 @@ class CustomerEdit extends Component {
     copyrigtby: ''
   };
 
+
+
+  emptyLot ={
+    id:'',
+    name:''
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       item: this.emptyCustomer,
-      age: [
-          {id: 1, name: 'A'},
-          {id: 2, name: 'B'}
-        ]
+      age:this.emptyLot
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,12 +33,22 @@ class CustomerEdit extends Component {
   async componentDidMount() {
     if (this.props.match.params.id !== 'new') {
       const customer = await (await fetch(`/api/customer/${this.props.match.params.id}`)).json();
-      this.setState({item: customer,
-        age: [
-          {id: 1, name: 'A'},
-          {id: 2, name: 'B'}
-        ]
+      const lot = await (await fetch(`/api/lots`)).json();
+      this.setState({
+        item: customer,
+        age:lot
       });
+
+       
+    }
+    if (this.props.match.params.id === 'new') {
+     
+      const lot = await (await fetch(`/api/lots`)).json();
+      this.setState({
+        age:lot
+      });
+
+       
     }
   }
 
@@ -44,7 +58,8 @@ class CustomerEdit extends Component {
     const name = target.name;
     let item = {...this.state.item};
     item[name] = value;
-    this.setState({item});
+    let lot = {...this.state.lot};
+    this.setState({item, lot});
   }
 
   async handleSubmit(event) {
@@ -63,14 +78,12 @@ class CustomerEdit extends Component {
   }
 
   render() {
-    const {item} = this.state;
+    const {item, age} = this.state;
     const title = <h2>{item.id ? 'Edit Customer' : 'Add Customer'}</h2>;
-
-    const { age } = this.state;
+    
 
     let lotList = age.length > 0
     	&& age.map((item, i) => {
-      
        return (
         <option key={i} value={item.id}>{item.name}</option>
       ) 
@@ -97,7 +110,7 @@ class CustomerEdit extends Component {
           <FormGroup>
             <Label for="age">Age</Label>
 
-            <select id="age" name="age"  onChange={this.handleChange} className="form-control">
+            <select id="age"  value={item.age} name="age"  onChange={this.handleChange} className="form-control">
           <option></option>
           {lotList}
         </select>
