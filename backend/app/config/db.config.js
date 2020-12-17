@@ -20,5 +20,6 @@ db.sequelize = sequelize;
  
 db.Customer = require('../models/customer.model.js')(sequelize, Sequelize);
 db.Lot = require('../models/lot.model.js')(sequelize, Sequelize);
+db.Type = require('../models/type.model.js')(sequelize, Sequelize);
  
 module.exports = db;

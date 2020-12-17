@@ -12,13 +12,13 @@ exports.createCustomer = (req, res) => {
     try{
         // Building Customer object from upoading request's body
         customer.firstname = req.body.firstname;
-        customer.lastname = req.body.lastname;
+        customer.typeid = req.body.typeid;
         customer.address = req.body.address;
-        customer.age = req.body.age;
+        customer.lotid = req.body.lotid;
     
         // Save to MySQL database
         Customer.create(customer, 
-                          {attributes: ['id', 'firstname', 'lastname', 'age', 'address', "copyright"]})
+                          {attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', "copyright"]})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -38,7 +38,7 @@ exports.createCustomer = (req, res) => {
 exports.customers = (req, res) => {
     // find all Customer information from 
     try{
-        Customer.findAll({attributes: ['id', 'firstname', 'lastname', 'age', 'address', 'copyright']})
+        Customer.findAll({attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']})
         .then(customers => {
             res.status(200).json(customers);
         })
@@ -55,7 +55,7 @@ exports.customers = (req, res) => {
 
 exports.getCustomer = (req, res) => {
     Customer.findByPk(req.params.id, 
-                        {attributes: ['id', 'firstname', 'lastname', 'age', 'address', 'copyright']})
+                        {attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']})
         .then(customer => {
           res.status(200).json(customer);
         }).catch(error => {
@@ -88,15 +88,15 @@ exports.updateCustomer = async (req, res) => {
             // update new change to database
             let updatedObject = {
                 firstname: req.body.firstname,
-                lastname: req.body.lastname,
+                typeid: req.body.typeid,
                 address: req.body.address,
-                age: req.body.age
+                lotid: req.body.lotid
             }
             let result = await Customer.update(updatedObject,
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id', 'firstname', 'lastname', 'age', 'address', 'copyright']
+                                attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']
                               }
                             );
 

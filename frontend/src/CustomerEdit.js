@@ -2,18 +2,24 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 import AppNavbar from './AppNavbar';
+//import Type from './Type';
 
 class CustomerEdit extends Component {
 
   emptyCustomer = {
     firstname: '',
-    lastname: '',
-    age: [],
+    typeid: '',
+    lotid: [],
     address: '',
     copyrigtby: ''
   };
 
 
+  
+  emptyType ={
+    id:'',
+    name:''
+  }
 
   emptyLot ={
     id:'',
@@ -24,7 +30,8 @@ class CustomerEdit extends Component {
     super(props);
     this.state = {
       item: this.emptyCustomer,
-      age:this.emptyLot
+      lotid:this.emptyLot,
+      typeid:this.emptyType
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,9 +41,11 @@ class CustomerEdit extends Component {
     if (this.props.match.params.id !== 'new') {
       const customer = await (await fetch(`/api/customer/${this.props.match.params.id}`)).json();
       const lot = await (await fetch(`/api/lots`)).json();
+      const type = await (await fetch(`/api/types`)).json();
       this.setState({
         item: customer,
-        age:lot
+        lotid:lot,
+        typeid:type
       });
 
        
@@ -45,7 +54,7 @@ class CustomerEdit extends Component {
      
       const lot = await (await fetch(`/api/lots`)).json();
       this.setState({
-        age:lot
+        lotid:lot
       });
 
        
@@ -78,16 +87,23 @@ class CustomerEdit extends Component {
   }
 
   render() {
-    const {item, age} = this.state;
+    const {item, lotid, typeid} = this.state;
     const title = <h2>{item.id ? 'Edit Customer' : 'Add Customer'}</h2>;
     
 
-    let lotList = age.length > 0
-    	&& age.map((item, i) => {
+    let lotList = lotid.length > 0
+    	&& lotid.map((item, i) => {
        return (
         <option key={i} value={item.id}>{item.name}</option>
       ) 
     }, this);
+
+    let typeList = typeid.length > 0
+    && typeid.map((item, i) => {
+     return (
+      <option key={i} value={item.id}>{item.name}</option>
+    ) 
+  }, this);
 
    
     
@@ -103,20 +119,20 @@ class CustomerEdit extends Component {
                    onChange={this.handleChange} autoComplete="firstname"/>
           </FormGroup>
           <FormGroup>
-            <Label for="lastname">Lastname</Label>
-            <Input type="text" name="lastname" id="lastname" value={item.lastname || ''}
-                   onChange={this.handleChange} autoComplete="lastname"/>
-          </FormGroup>          
+            <Label for="typeid">Type</Label>
+            <select id="typeid"  value={item.typeid} name="typeid"  onChange={this.handleChange} className="form-control">
+          <option></option>
+          {typeList}
+        </select>
+             </FormGroup>          
           <FormGroup>
-            <Label for="age">Age</Label>
+            <Label for="lotid">Lot</Label>
 
-            <select id="age"  value={item.age} name="age"  onChange={this.handleChange} className="form-control">
+            <select id="lotid"  value={item.lotid} name="lotid"  onChange={this.handleChange} className="form-control">
           <option></option>
           {lotList}
         </select>
-           {/*  <Input type="text" name="age" id="age" value={item.age || ''}
-                   onChange={this.handleChange} autoComplete="age"/> */}
-          </FormGroup>
+            </FormGroup>
           <FormGroup>
             <Label for="address">Address</Label>
             <Input type="text" name="address" id="address" value={item.address || ''}

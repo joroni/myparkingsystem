@@ -1,23 +1,22 @@
 const db = require('../config/db.config.js');
-const Lot = db.Lot;
+const Type = db.Type;
 
 /**
- * Save a Lot object to database MySQL/PostgreSQL
+ * Save a Type object to database MySQL/PostgreSQL
  * @param {*} req 
  * @param {*} res 
  */
-exports.createLot = (req, res) => {
-    let lot = {};
+exports.createType = (req, res) => {
+    let type = {};
 
     try{
-        // Building Lot object from upoading request's body
-        lot.name = req.body.name;
-        lot.slots = req.body.slots;
-        lot.isactive = req.body.isactive;
+        // Building Type object from upoading request's body
+        type.name = req.body.name;
+    
      
         // Save to MySQL database
-        Lot.create(lot, 
-                          {attributes: ['id', 'name','slots', 'isactive']})
+        Type.create(type, 
+                          {attributes: ['id', 'name']})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -30,16 +29,16 @@ exports.createLot = (req, res) => {
 }
 
 /**
- * Retrieve Lot information from database
+ * Retrieve Type information from database
  * @param {*} req 
  * @param {*} res 
  */
-exports.lots = (req, res) => {
-    // find all Lot information from 
+exports.types = (req, res) => {
+    // find all Type information from 
     try{
-        Lot.findAll({attributes: ['id','name','slots','isactive']})
-        .then(lots => {
-            res.status(200).json(lots);
+        Type.findAll({attributes: ['id','name']})
+        .then(types => {
+            res.status(200).json(types);
         })
     }catch(error) {
         // log on console
@@ -52,11 +51,11 @@ exports.lots = (req, res) => {
     }
 }
 
-exports.getLot = (req, res) => {
-    Lot.findByPk(req.params.id, 
-                        {attributes: ['id','name','slots','isactive']})
-        .then(lot => {
-          res.status(200).json(lot);
+exports.getType = (req, res) => {
+    Type.findByPk(req.params.id, 
+                        {attributes: ['id','name']})
+        .then(type => {
+          res.status(200).json(type);
         }).catch(error => {
           // log on console
           console.log(error);
@@ -69,18 +68,18 @@ exports.getLot = (req, res) => {
 }
 
 /**
- * Updating a Lot
+ * Updating a Type
  * @param {*} req 
  * @param {*} res 
  */
-exports.updateLot = async (req, res) => {
+exports.updateType = async (req, res) => {
     try{
-        let lot = await Lot.findByPk(req.body.id);
+        let type = await Type.findByPk(req.body.id);
     
-        if(!lot){
+        if(!type){
             // return a response to client
             res.status(404).json({
-                message: "Not Found for updating a lot with id = " + lotId,
+                message: "Not Found for updating a type with id = " + typeId,
                 error: "404"
             });
         } else {    
@@ -90,18 +89,18 @@ exports.updateLot = async (req, res) => {
                 slots: req.body.slots,
                 isactive: req.body.isactive
             }
-            let result = await Lot.update(updatedObject,
+            let result = await Type.update(updatedObject,
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id','name','slots','isactive']
+                                attributes: ['id','name']
                               }
                             );
 
             // return the response to client
             if(!result) {
                 res.status(500).json({
-                    message: "Error -> Can not update a lot with id = " + req.params.id,
+                    message: "Error -> Can not update a type with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
@@ -110,34 +109,34 @@ exports.updateLot = async (req, res) => {
         }
     } catch(error){
         res.status(500).json({
-            message: "Error -> Can not update a lot with id = " + req.params.id,
+            message: "Error -> Can not update a type with id = " + req.params.id,
             error: error.message
         });
     }
 }
 
 /**
- *  Delete a Lot by ID
+ *  Delete a Type by ID
  * @param {*} req 
  * @param {*} res 
  */
-exports.deleteLot = async (req, res) => {
+exports.deleteType = async (req, res) => {
     try{
-        let lotId = req.params.id;
-        let lot = await Lot.findByPk(lotId);
+        let typeId = req.params.id;
+        let type = await Type.findByPk(typeId);
 
-        if(!lot){
+        if(!type){
             res.status(404).json({
-                message: "Does Not exist a Lot with id = " + lotId,
+                message: "Does Not exist a Type with id = " + typeId,
                 error: "404",
             });
         } else {
-            await lot.destroy();
+            await type.destroy();
             res.status(200);
         }
     } catch(error) {
         res.status(500).json({
-            message: "Error -> Can NOT delete a lot with id = " + req.params.id,
+            message: "Error -> Can NOT delete a type with id = " + req.params.id,
             error: error.message
         });
     }

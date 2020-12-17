@@ -17,19 +17,17 @@ const options = [
   },
 ];
 
-class LotEdit extends Component {
+class TypeEdit extends Component {
 
 
-  emptyLot = {
+  emptyType = {
     name: "",
-    slots:"",
-    isactive: "",
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      item: this.emptyLot,
+      item: this.emptyType,
       selectedOption: null
     };
     this.handleChange = this.handleChange.bind(this);
@@ -38,12 +36,12 @@ class LotEdit extends Component {
 
   async componentDidMount() {
     if (this.props.match.params.id !== "new") {
-      const lot = await (
-        await fetch(`/api/lot/${this.props.match.params.id}`)
+      const type = await (
+        await fetch(`/api/type/${this.props.match.params.id}`)
       ).json();
-      this.setState({ item: lot });
+      this.setState({ item: type });
       
-      console.log(lot);
+      console.log(type);
      // this.handleChanges();
     }
   }
@@ -54,7 +52,6 @@ class LotEdit extends Component {
     const value = target.value;
     const label = target.name;
     const name = target.name;
-    const slots = target.slots;
     let item = { ...this.state.item };
     let selectedOption =  { ...this.state.selectedOption };
     selectedOption[name] = label;
@@ -65,7 +62,7 @@ class LotEdit extends Component {
   async handleSubmit(event) {
     event.preventDefault();
     const { item } = this.state;
-    await fetch("/api/lot", {
+    await fetch("/api/type", {
       method: item.id ? "PUT" : "POST",
       headers: {
         Accept: "application/json",
@@ -73,13 +70,13 @@ class LotEdit extends Component {
       },
       body: JSON.stringify(item),
     });
-    this.props.history.push("/lots");
+    this.props.history.push("/types");
   }
 
   render() {
     // this.selectedOption = this.state;
     const { item } = this.state;
-    const title = <h2>{item.id ? "Edit Lot" : "Add Lot"}</h2>;
+    const title = <h2>{item.id ? "Edit Type" : "Add Type"}</h2>;
 
     return (
       <div>
@@ -98,29 +95,12 @@ class LotEdit extends Component {
                 autoComplete="name"
               />
             </FormGroup>
-            <FormGroup>
-              <Label for="slots">Slots</Label>
-              <Input
-                type="number"
-                name="slots"
-                id="slots"
-                value={item.slots || ""}
-                onChange={this.handleChange}
-                autoComplete="slots"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="isactive">Is Active</Label>
-              {<Input type="text" name="isactive" id="isactive" value={item.isactive || ''}
-                   onChange={this.handleChange} autoComplete="isactive"/>}
             
-            </FormGroup>
-
             <FormGroup>
               <Button color="primary" type="submit">
                 Save
               </Button>{" "}
-              <Button color="secondary" tag={Link} to="/lots">
+              <Button color="secondary" tag={Link} to="/types">
                 Cancel
               </Button>
             </FormGroup>
@@ -131,4 +111,4 @@ class LotEdit extends Component {
   }
 }
 
-export default withRouter(LotEdit);
+export default withRouter(TypeEdit);

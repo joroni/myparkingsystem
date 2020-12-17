@@ -43,8 +43,9 @@ class CustomerList extends Component {
     const customerList = customers.map(customer => {
       return <tr key={customer.id}>
         <td style={{whiteSpace: 'nowrap'}}>{customer.firstname}</td>
-        <td>{customer.lastname}</td>
-        <td>{customer.age}</td>
+      
+        <td>{customer.lotid}</td>
+        <td>{customer.typeid}</td>
         <td>{customer.address}</td>
         <td><a href={customer.copyright}>{customer.copyright}</a></td>
         <td>
@@ -68,8 +69,9 @@ class CustomerList extends Component {
             <thead>
               <tr>
                 <th width="20%">Firstname</th>
-                <th width="20%">Lastname</th>
-                <th width="10%">Age</th>
+               
+                <th width="10%">Lot</th>
+                <th width="20%">Type</th>
                 <th>Address</th>
                 <th>Copyrightby</th>
                 <th width="10%">Actions</th>
