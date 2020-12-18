@@ -1,22 +1,22 @@
 const db = require('../config/db.config.js');
-const Type = db.Type;
+const Spot = db.Spot;
 
 /**
- * Save a Type object to database MySQL/PostgreSQL
+ * Save a Spot object to database MySQL/PostgreSQL
  * @param {*} req 
  * @param {*} res 
  */
-exports.createType = (req, res) => {
-    let type = {};
+exports.createSpot = (req, res) => {
+    let spot = {};
 
     try{
-        // Building Type object from upoading request's body
-        type.name = req.body.name;
+        // Building Spot object from upoading request's body
+        spot.name = req.body.name;
     
      
         // Save to MySQL database
-        Type.create(type, 
-                          {attributes: ['id', 'name']})
+        Spot.create(spot, 
+                          {attributes:['id','spotid','name','state']})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -29,16 +29,16 @@ exports.createType = (req, res) => {
 }
 
 /**
- * Retrieve Type information from database
+ * Retrieve Spot information from database
  * @param {*} req 
  * @param {*} res 
  */
-exports.types = (req, res) => {
-    // find all Type information from 
+exports.spots = (req, res) => {
+    // find all Spot information from 
     try{
-        Type.findAll({attributes: ['id','name']})
-        .then(types => {
-            res.status(200).json(types);
+        Spot.findAll({attributes: ['id','spotid','name','state']})
+        .then(spots => {
+            res.status(200).json(spots);
         })
     }catch(error) {
         // log on console
@@ -51,11 +51,11 @@ exports.types = (req, res) => {
     }
 }
 
-exports.getType = (req, res) => {
-    Type.findByPk(req.params.id, 
-                        {attributes: ['id','name']})
-        .then(type => {
-          res.status(200).json(type);
+exports.getSpot = (req, res) => {
+    Spot.findByPk(req.params.id, 
+                        {attributes: ['id','spotid','name','state']})
+        .then(spot => {
+          res.status(200).json(spot);
         }).catch(error => {
           // log on console
           console.log(error);
@@ -68,37 +68,38 @@ exports.getType = (req, res) => {
 }
 
 /**
- * Updating a Type
+ * Updating a Spot
  * @param {*} req 
  * @param {*} res 
  */
-exports.updateType = async (req, res) => {
+exports.updateSpot = async (req, res) => {
     try{
-        let type = await Type.findByPk(req.body.id);
+        let spot = await Spot.findByPk(req.body.id);
     
-        if(!type){
+        if(!spot){
             // return a response to client
             res.status(404).json({
-                message: "Not Found for updating a type with id = " + typeId,
+                message: "Not Found for updating a spot with id = " + typeId,
                 error: "404"
             });
         } else {    
             // update new change to database
             let updatedObject = {
-                name: req.body.name
+                name: req.body.name,
+                spotid: req.body.spotid
             }
-            let result = await Type.update(updatedObject,
+            let result = await Spot.update(updatedObject,
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id','name']
+                                attributes: ['id','spotid','name','state']
                               }
                             );
 
             // return the response to client
             if(!result) {
                 res.status(500).json({
-                    message: "Error -> Can not update a type with id = " + req.params.id,
+                    message: "Error -> Can not update a spot with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
@@ -107,34 +108,34 @@ exports.updateType = async (req, res) => {
         }
     } catch(error){
         res.status(500).json({
-            message: "Error -> Can not update a type with id = " + req.params.id,
+            message: "Error -> Can not update a spot with id = " + req.params.id,
             error: error.message
         });
     }
 }
 
 /**
- *  Delete a Type by ID
+ *  Delete a Spot by ID
  * @param {*} req 
  * @param {*} res 
  */
-exports.deleteType = async (req, res) => {
+exports.deleteSpot = async (req, res) => {
     try{
         let typeId = req.params.id;
-        let type = await Type.findByPk(typeId);
+        let spot = await Spot.findByPk(typeId);
 
-        if(!type){
+        if(!spot){
             res.status(404).json({
-                message: "Does Not exist a Type with id = " + typeId,
+                message: "Does Not exist a Spot with id = " + typeId,
                 error: "404",
             });
         } else {
-            await type.destroy();
+            await spot.destroy();
             res.status(200);
         }
     } catch(error) {
         res.status(500).json({
-            message: "Error -> Can NOT delete a type with id = " + req.params.id,
+            message: "Error -> Can NOT delete a spot with id = " + req.params.id,
             error: error.message
         });
     }

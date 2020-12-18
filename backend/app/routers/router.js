@@ -4,6 +4,7 @@ let router = express.Router();
 const customers = require('../controllers/controller.js');
 const lots = require('../controllers/lot.js');
 const types = require('../controllers/type.js');
+const spots = require('../controllers/spot.js');
 
 router.post('/api/customer', customers.createCustomer);
 router.get('/api/customer/:id', customers.getCustomer);
@@ -26,4 +27,11 @@ router.get('/api/type/:id', types.getType);
 router.get('/api/types', types.types);
 router.put('/api/type', types.updateType);
 router.delete('/api/type/:id', types.deleteType);
+
+
+router.post('/api/spot', spots.createSpot);
+router.get('/api/spot/:id', spots.getSpot);
+router.get('/api/spots', spots.spots);
+router.put('/api/spot', spots.updateSpot);
+router.delete('/api/spot/:id', spots.deleteSpot);
 module.exports = router;

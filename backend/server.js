@@ -10,6 +10,7 @@ const db = require('./app/config/db.config.js');
 const Customer = db.Customer;
 const Lot = db.Lot;
 const Type = db.Type;
+const Spot = db.Spot;
 
 let router = require('./app/routers/router.js');
 
@@ -37,12 +38,12 @@ db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync with { force: true }');
   Customer.sync().then(() => {
     const customers = [
-      { firstname: 'Jack', typeid: 1, 
-                lotid: 1, address: '374 William S Canning Blvd'},
-      { firstname: 'Adam', typeid: 2, 
-                lotid: 2, address: 'Fall River MA 2721. 121 Worcester Rd'},
-      { firstname: 'Dana', typeid: 3, 
-                lotid: 3, address: 'Framingham MA 1701. 677 Timpany Blvd'},
+      { firstname: 'SED1111', typeid: 1, 
+                lotid: 1, endtime: ''},
+      { firstname: 'SUV1111', typeid: 2, 
+                lotid: 2, endtime: ''},
+      { firstname: 'VAN111', typeid: 3, 
+                lotid: 3, endtime: ''},
     ]
     
     for(let i=0; i<customers.length; i++){
@@ -73,6 +74,20 @@ db.sequelize.sync({force: true}).then(() => {
     
     for(let k=0; k<types.length; k++){
       Type.create(types[k]);
+    }
+  })
+
+
+  
+  Spot.sync().then(() => {
+    const spots = [
+      {id:1, name: 'A1', spotid:1, state:0},
+      {id:2, name: 'A2', spotid:2, state:0},
+      {id:3, name: 'A3', spotid:3, state:0},
+    ]
+    
+    for(let l=0; l<spots.length; l++){
+      Spot.create(spots[l]);
     }
   })
 }); 

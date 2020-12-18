@@ -13,12 +13,12 @@ exports.createCustomer = (req, res) => {
         // Building Customer object from upoading request's body
         customer.firstname = req.body.firstname;
         customer.typeid = req.body.typeid;
-        customer.address = req.body.address;
+        customer.endtime = req.body.endtime;
         customer.lotid = req.body.lotid;
     
         // Save to MySQL database
         Customer.create(customer, 
-                          {attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', "copyright"]})
+                          {attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', "starttime"]})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -38,7 +38,7 @@ exports.createCustomer = (req, res) => {
 exports.customers = (req, res) => {
     // find all Customer information from 
     try{
-        Customer.findAll({attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']})
+        Customer.findAll({attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']})
         .then(customers => {
             res.status(200).json(customers);
         })
@@ -55,7 +55,7 @@ exports.customers = (req, res) => {
 
 exports.getCustomer = (req, res) => {
     Customer.findByPk(req.params.id, 
-                        {attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']})
+                        {attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']})
         .then(customer => {
           res.status(200).json(customer);
         }).catch(error => {
@@ -89,14 +89,14 @@ exports.updateCustomer = async (req, res) => {
             let updatedObject = {
                 firstname: req.body.firstname,
                 typeid: req.body.typeid,
-                address: req.body.address,
+                endtime: req.body.endtime,
                 lotid: req.body.lotid
             }
             let result = await Customer.update(updatedObject,
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id', 'firstname', 'typeid', 'lotid', 'address', 'copyright']
+                                attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']
                               }
                             );
 

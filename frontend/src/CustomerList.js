@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
+import 'moment-timezone';
+import Moment from 'react-moment';
 
 class CustomerList extends Component {
 
@@ -34,8 +36,11 @@ class CustomerList extends Component {
   }
 
   render() {
+    //const dateToFormat = new Date();
+    
     const {customers, isLoading} = this.state;
-
+    const types = ["", "SP", "MP", "LP"];
+    const lots = ["", "A", "B", "C"];
     if (isLoading) {
       return <p>Loading...</p>;
     }
@@ -44,10 +49,11 @@ class CustomerList extends Component {
       return <tr key={customer.id}>
         <td style={{whiteSpace: 'nowrap'}}>{customer.firstname}</td>
       
-        <td>{customer.lotid}</td>
-        <td>{customer.typeid}</td>
-        <td>{customer.address}</td>
-        <td><a href={customer.copyright}>{customer.copyright}</a></td>
+        <td>{lots[customer.lotid]}</td>
+        <td>{types[customer.typeid]}</td>
+        <td><Moment date={customer.starttime} /></td>
+        <td>{customer.endtime}</td>
+       
         <td>
           <ButtonGroup>
             <Button size="sm" color="primary" tag={Link} to={"/customers/" + customer.id}>Edit</Button>
@@ -68,12 +74,12 @@ class CustomerList extends Component {
           <Table className="mt-4">
             <thead>
               <tr>
-                <th width="20%">Firstname</th>
+                <th width="20%">Vehicle No.</th>
                
                 <th width="10%">Lot</th>
                 <th width="20%">Type</th>
-                <th>Address</th>
-                <th>Copyrightby</th>
+                <th>Start</th>
+                <th>End</th>
                 <th width="10%">Actions</th>
               </tr>
             </thead>

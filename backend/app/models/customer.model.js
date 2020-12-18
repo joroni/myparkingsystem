@@ -11,15 +11,17 @@ module.exports = (sequelize, Sequelize) => {
     typeid: {
       type: Sequelize.INTEGER,
     },
-    address: {
-      type: Sequelize.STRING,
+    endtime: {
+      type: Sequelize.DATE,
+      
     },
     lotid: {
       type: Sequelize.INTEGER,
     },
-    copyright: {
-      type: Sequelize.STRING,
-      defaultValue: "https://joroni.com",
+    starttime: {
+	  type: Sequelize.DATE,
+	  defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+    //  defaultValue: "https://joroni.com",
     },
   });
 

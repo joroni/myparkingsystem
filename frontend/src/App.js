@@ -8,6 +8,7 @@ import CustomerEdit from './CustomerEdit';
 import LotEdit from './LotEdit';
 import TypeList from './TypeList';
 import TypeEdit from './TypeEdit';
+import SpotList from './SpotList';
 
 class App extends Component {
   render() {
@@ -21,6 +22,7 @@ class App extends Component {
           <Route path='/lots/:id' component={LotEdit}/>
           <Route path='/types' exact={true} component={TypeList}/>
           <Route path='/types/:id' component={TypeEdit}/>
+          <Route path='/spots' exact={true} component={SpotList}/>
         </Switch>
       </Router>
     )
