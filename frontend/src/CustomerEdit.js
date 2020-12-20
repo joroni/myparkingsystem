@@ -115,7 +115,6 @@ class CustomerEdit extends Component {
           <FormGroup>
             <Label for="endtime">End</Label>
             <div className="row">
-              <div className="col">{timeEnd}</div>
               <div className="col">
                 <Input
                   type="datetime-local"
@@ -198,10 +197,8 @@ class CustomerEdit extends Component {
                 {typeList}
               </select>
             </FormGroup>
-
             {timer}
             {endtimer}
-
             <FormGroup>
               <Label for="difference">Total Hour(s)</Label>
               <Moment className="form-control" diff={item.starttime} unit="hours">
