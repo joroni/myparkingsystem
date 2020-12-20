@@ -36,7 +36,7 @@ exports.createSpot = (req, res) => {
 exports.spots = (req, res) => {
     // find all Spot information from 
     try{
-        Spot.findAll({attributes: ['id','spotid','name','state']})
+        Spot.findAll({attributes:  ['id','lotid','spotid','name','state']})
         .then(spots => {
             res.status(200).json(spots);
         })
@@ -53,7 +53,7 @@ exports.spots = (req, res) => {
 
 exports.getSpot = (req, res) => {
     Spot.findByPk(req.params.id, 
-                        {attributes: ['id','spotid','name','state']})
+                        {attributes: ['id','lotid','spotid','name','state']})
         .then(spot => {
           res.status(200).json(spot);
         }).catch(error => {
@@ -92,7 +92,7 @@ exports.updateSpot = async (req, res) => {
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id','spotid','name','state']
+                                attributes:  ['id','lotid','spotid','name','state']
                               }
                             );
 

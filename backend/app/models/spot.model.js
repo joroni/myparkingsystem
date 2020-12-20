@@ -5,6 +5,9 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    lotid: {
+      type: Sequelize.INTEGER,
+    },
     spotid: {
       type: Sequelize.INTEGER,
     },

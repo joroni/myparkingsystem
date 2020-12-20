@@ -34,16 +34,20 @@ const server = app.listen(8080, function () {
   console.log("App listening at http://%s:%s", host, port); 
 })
 
+
+let dt = new Date();
+dt.setHours( dt.getHours() - 3 );
+
 db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync with { force: true }');
   Customer.sync().then(() => {
     const customers = [
       { firstname: 'SED1111', typeid: 1, 
-                lotid: 1, endtime: ''},
+                lotid: 1, starttime: dt, endtime: ''},
       { firstname: 'SUV1111', typeid: 2, 
-                lotid: 2, endtime: ''},
+                lotid: 2,starttime: dt, endtime: ''},
       { firstname: 'VAN111', typeid: 3, 
-                lotid: 3, endtime: ''},
+                lotid: 3,starttime: dt,  endtime: ''},
     ]
     
     for(let i=0; i<customers.length; i++){
@@ -81,9 +85,9 @@ db.sequelize.sync({force: true}).then(() => {
   
   Spot.sync().then(() => {
     const spots = [
-      {id:1, name: 'A1', spotid:1, state:0},
-      {id:2, name: 'A2', spotid:2, state:0},
-      {id:3, name: 'A3', spotid:3, state:0},
+      {id:1, lotid:1,name: 'A1', spotid:1, state:0},
+      {id:2, lotid:1,name: 'A2', spotid:2, state:0},
+      {id:3, lotid:1, name: 'A3', spotid:3, state:0},
     ]
     
     for(let l=0; l<spots.length; l++){

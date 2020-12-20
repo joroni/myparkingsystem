@@ -15,10 +15,12 @@ exports.createCustomer = (req, res) => {
         customer.typeid = req.body.typeid;
         customer.endtime = req.body.endtime;
         customer.lotid = req.body.lotid;
+        customer.timediff = req.body.timediff;
+        customer.bill = req.body.bill;
     
         // Save to MySQL database
         Customer.create(customer, 
-                          {attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', "starttime"]})
+                          {attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime','timediff','bill']})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -38,7 +40,7 @@ exports.createCustomer = (req, res) => {
 exports.customers = (req, res) => {
     // find all Customer information from 
     try{
-        Customer.findAll({attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']})
+        Customer.findAll({attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime','timediff','bill']})
         .then(customers => {
             res.status(200).json(customers);
         })
@@ -55,7 +57,7 @@ exports.customers = (req, res) => {
 
 exports.getCustomer = (req, res) => {
     Customer.findByPk(req.params.id, 
-                        {attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']})
+                        {attributes:  ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime','timediff','bill']})
         .then(customer => {
           res.status(200).json(customer);
         }).catch(error => {
@@ -90,13 +92,15 @@ exports.updateCustomer = async (req, res) => {
                 firstname: req.body.firstname,
                 typeid: req.body.typeid,
                 endtime: req.body.endtime,
-                lotid: req.body.lotid
+                lotid: req.body.lotid,
+                timediff: req.body.timediff,
+                bill:req.body.bill
             }
             let result = await Customer.update(updatedObject,
                               { 
                                 returning: true, 
                                 where: {id: req.body.id},
-                                attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime']
+                                attributes: ['id', 'firstname', 'typeid', 'lotid', 'endtime', 'starttime','timediff',,'bill']
                               }
                             );
 

@@ -51,8 +51,10 @@ class CustomerList extends Component {
       
         <td>{lots[customer.lotid]}</td>
         <td>{types[customer.typeid]}</td>
-        <td><Moment date={customer.starttime} /></td>
+        <td><Moment format="YYYY-MM-DD HH:mm" date={customer.starttime} /></td>
         <td>{customer.endtime}</td>
+        <td>{customer.bill}</td>
+        
        
         <td>
           <ButtonGroup>
@@ -80,6 +82,7 @@ class CustomerList extends Component {
                 <th width="20%">Type</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Bill</th>
                 <th width="10%">Actions</th>
               </tr>
             </thead>

@@ -23,6 +23,12 @@ module.exports = (sequelize, Sequelize) => {
 	  defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
     //  defaultValue: "https://joroni.com",
     },
+    timediff: {
+      type: Sequelize.INTEGER,
+    },
+    bill: {
+      type: Sequelize.INTEGER,
+    },
   });
 
   return Customer;

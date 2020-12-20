@@ -48,7 +48,7 @@ class LotList extends Component {
         <td>
           <ButtonGroup>
             <Button size="sm" color="primary" tag={Link} to={"/lots/" + lot.id}>Edit</Button>
-            <Button size="sm" color="danger" onClick={() => this.remove(lot.id)}>Delete</Button>
+            <Button size="sm" color="danger" onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.remove(lot.id) } }>Delete</Button>
           </ButtonGroup>
         </td>
       </tr>
