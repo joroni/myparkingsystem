@@ -13,8 +13,16 @@ class CustomerEdit extends Component {
     starttime: "",
     endtime: "",
     timediff: "",
+    bill:"",
   };
-
+  state = {
+    item: {
+        name: '',
+        price: '',
+        imageUrl: '',
+        description: '',
+      }
+  }
   emptyType = {
     id: "",
     name: "",
@@ -29,18 +37,49 @@ class CustomerEdit extends Component {
 
   constructor(props) {
     super(props);
-    let bill = JSON.parse(localStorage.getItem("bill"));
+   // let bill = JSON.parse(localStorage.getItem("bill"));
     this.state = {
       item: this.emptyCustomer,
       lotid: this.emptyLot,
-      typeid: this.emptyType,
-      bill: bill,
+      typeid: this.emptyType
       //  endtime: this.endTime,
     };
 
+    
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  onClick = (e) => {
+    e.preventDefault();
+    this.setState({
+        bill:JSON.parse(window.localStorage.getItem("bill"))
+    })
+
+
+
+    const getValue = (key, defaultValue = {}) => {
+        try {
+          // read value from local storage
+          const item = window.localStorage.getItem(key);
+          return item ? JSON.parse(item) : defaultValue;
+        } catch (error) {
+          console.log(error);
+          return defaultValue;
+        }
+      }
+      
+      const setValue = (key, value) => {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      
+      setValue("bill", {bill: JSON.parse(window.localStorage.getItem("bill"))})
+      console.log(getValue("bill"))
+}
 
   async componentDidMount() {
     if (this.props.match.params.id !== "new") {
@@ -49,30 +88,25 @@ class CustomerEdit extends Component {
       ).json();
       const lot = await (await fetch(`/api/lots`)).json();
       const type = await (await fetch(`/api/types`)).json();
-      const bill = localStorage.getItem("bill");
-      const endtime = this.endtime;
-      const starttime = this.starttime;
-      const timediff = this.timediff;
+     // const bill = localStorage.getItem("bill");
+    //  const endtime = this.endtime;
+      //const starttime = this.starttime;
+      //const timediff = this.timediff;
       //const bill = this.bill;
       this.setState({
         item: customer,
         lotid: lot,
-        typeid: type,
-        starttime: starttime,
-        endtime: endtime,
-        timediff: timediff,
-        bill: bill,
+        typeid: type
       });
       // this.handleRelease();
+      
     }
     if (this.props.match.params.id === "new") {
       const lot = await (await fetch(`/api/lots`)).json();
       const type = await (await fetch(`/api/types`)).json();
-      const bill = localStorage.getItem("bill");
       this.setState({
         lotid: lot,
         typeid: type,
-        bill: bill,
       });
     }
   }
@@ -81,14 +115,24 @@ class CustomerEdit extends Component {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    let timediff = this.state.timediff;
-    let bill = this.state.value;
+    
+ 
     let item = { ...this.state.item };
+   let bill = { ...this.state.item.bill };
     item[name] = value;
+    item[bill] = value;
+   // let bill = { ...this.state.bill };
     let lot = { ...this.state.lot };
-    this.setState({ item, lot, timediff, bill });
+    let type = { ...this.state.type };
+    this.setState({ item, lot, type});
+    this.setState({ bill: event.target.value });
     // this.tariff(this.typeid, this.quanTity);
+
+    console.log(item)
   }
+
+
+  
 
   async handleSubmit(event) {
     event.preventDefault();
@@ -105,114 +149,174 @@ class CustomerEdit extends Component {
     this.props.history.push("/customers");
   }
 
-  hello() {
-    alert("hi");
+
+
+getTimeDiff(dates1,dates2) {
+  const date1s = new Date(dates1);
+  const date2s = new Date(dates2);
+  const diffInMs = Math.abs(date2s - date1s);
+ // const diff =  diffInMs / (1000 * 60 * 60);
+  return Math.round(diffInMs / (1000 * 60 * 60));
+ /*  if(diff <= 3){
+    return 5;
+  } else {
+    return Math.round(diffInMs / (1000 * 60 * 60) - 3);
+  } */
+  
+}
+
+
+getBill(typeId, dates1, dates2){
+  const date1s = new Date(dates1);
+  const date2s = new Date(dates2);
+  const parkedTime = this.getTimeDiff(date1s,date2s);
+  let price = 0;
+  let typeid =typeId;
+  let penalty = 0;
+  let bill = 0;
+
+  if (parkedTime <= 3) {
+    // eslint-disable-next-line no-const-assign
+    price = 40;
+    // eslint-disable-next-line no-const-assign
+    bill = price;
+    console.log("Bill", bill);
+   // localStorage.setItem("bill ", bill);
+     return bill;
   }
 
-  test(typeId, dates1, dates2) {
-    let penalty = "";
-    let typeid = parseInt(typeId);
-    let price = "";
-    let bill = this.bill;
-    const date1 = new Date(dates1);
-    const date2 = new Date(dates2);
-    console.log(getDifferenceInDays(date1, date2));
-    console.log(getDifferenceInHours(typeid, date1, date2));
-
-    /*  console.log(getDifferenceInMinutes(date1, date2));
-    console.log(getDifferenceInSeconds(date1, date2));
- */
-    function getDifferenceInDays(date1, date2) {
-      const diffInMs = Math.abs(date2 - date1);
-      return diffInMs / (1000 * 60 * 60 * 24);
-    }
-
-    function getDifferenceInHours(typeId, date1, date2) {
-      const diffInMs = Math.abs(date2 - date1);
-      return diffInMs / (1000 * 60 * 60);
-    }
-    const qnTity = getDifferenceInHours(typeId, date1, date2);
-    const quanTity = Math.round(qnTity);
-    localStorage.setItem("diff ", quanTity);
-    console.log("quantity ", quanTity);
-    console.log("type ", typeId);
-    /*    function getDifferenceInMinutes(date1, date2) {
-      const diffInMs = Math.abs(date2 - date1);
-      return diffInMs / (1000 * 60);
-    }
-
-    function getDifferenceInSeconds(date1, date2) {
-      const diffInMs = Math.abs(date2 - date1);
-      return diffInMs / 1000;
-    }
- */
-
-    // eslint-disable-next-line eqeqeq
-
-    if (quanTity <= 3) {
-      // eslint-disable-next-line no-const-assign
-      price = 40;
-      // eslint-disable-next-line no-const-assign
-      const bill = price;
-      console.log("Bill", bill);
-      localStorage.setItem("bill ", bill);
-      // return bill;
-    }
-
-    // eslint-disable-next-line eqeqeq
-    if (typeId == 1 && quanTity > 3) {
-      price = 40;
-      penalty = price * quanTity;
-      bill = penalty;
-      console.log("Bill", bill);
-      localStorage.setItem("bill ", bill);
-      //  return bill;
-    }
-
-    // eslint-disable-next-line eqeqeq
-    if (typeId == 2 && quanTity > 3) {
-      price = 60;
-      penalty = price * quanTity;
-      bill = penalty;
-      console.log("Bill", bill);
-      localStorage.setItem("bill ", bill);
-      //  return bill;
-    }
-    // eslint-disable-next-line eqeqeq
-    if (typeId == 3 && quanTity > 3) {
-      console.log(quanTity);
-      price = 100;
-      penalty = price * quanTity;
-      bill = penalty;
-      console.log("Bill", bill);
-      localStorage.setItem("bill ", bill);
-      //  return bill;
-    }
-
-    if (quanTity > 23) {
-      penalty = 5000;
-      bill = penalty;
-      console.log("Bill", bill);
-      localStorage.setItem("bill ", bill);
-      //  return bill;
-    }
+  if (typeid === 1 && parkedTime > 3) {
+    // eslint-disable-next-line no-const-assign
+    price = 40;
+    // eslint-disable-next-line no-const-assign
+    penalty = 40;
+    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-const-assign
+    bill = price + (penalty * (parkedTime));
+    // eslint-disable-next-line no-const-assign
+    console.log("Type", typeid);
+    console.log("Price", price);
+    console.log("Parked OT", parkedTime);
+    console.log("Penalty", penalty);
+    console.log("Bill", bill);
+  //  localStorage.setItem("bill ", bill);
+     return bill;
   }
+
+  if (typeid === 2 && parkedTime) {
+    // eslint-disable-next-line no-const-assign
+    price = 40;
+    // eslint-disable-next-line no-const-assign
+    penalty = 60;
+    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-const-assign
+    bill = price + (penalty * (parkedTime))
+    // eslint-disable-next-line no-const-assign
+    
+    console.log("Type", typeid);
+    console.log("Price", price);
+    console.log("Parked OT", parkedTime);
+    console.log("Penalty", penalty);
+    console.log("Bill", bill);
+  //  localStorage.setItem("bill ", bill);
+     return bill;
+  }
+  
+
+  if (typeid === 3 && parkedTime > 3) {
+    // eslint-disable-next-line no-const-assign
+    price = 40;
+    // eslint-disable-next-line no-const-assign
+    penalty = 100;
+    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-const-assign
+    bill = price + (penalty * (parkedTime))
+    // eslint-disable-next-line no-const-assign
+    
+    console.log("Type", typeid);
+    console.log("Price", price);
+    console.log("Parked OT", parkedTime);
+    console.log("Penalty", penalty);
+    console.log("Bill", bill);
+  //  localStorage.setItem("bill ", bill);
+     return bill;
+  }
+  
+
+  if (parkedTime >= 24) {
+    // eslint-disable-next-line no-const-assign
+    price = 0;
+    // eslint-disable-next-line no-const-assign
+    penalty = 5000;
+    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-const-assign
+    bill = price + (penalty * (parkedTime))
+    // eslint-disable-next-line no-const-assign
+    
+    console.log("Type", typeid);
+    console.log("Price", price);
+    console.log("Parked OT", parkedTime);
+    console.log("Penalty", penalty);
+    console.log("Bill", bill);
+  //  localStorage.setItem("bill ", bill);
+     return bill;
+  }
+}
 
   render() {
     const { item, lotid, typeid } = this.state;
     const timeStart = (
       <Moment format="YYYY-MM-DD HH:mm" date={item.starttime} />
     );
-    //const timediff = JSON.parse(localStorage.getItem("diff"));
+   // const timediff = JSON.parse(localStorage.getItem("diff"));
 
-    const timeEnd = <Moment format="YYYY-MM-DD HH:mm" date={item.endtime} />;
+  //  const timeEnd = <Moment format="YYYY-MM-DD HH:mm" date={item.endtime} />;
     //const timestayed = timeEnd.diff(timeStart, 'days');
 
     const title = <h2>{item.id ? "Edit Customer" : "Add Customer"}</h2>; //const timestayed = discharge.diff(admission, 'days');
+   
 
-    /*  const admission = Moment('{item.starttime}', 'DD-MM-YYYY'); 
-    const discharge = Moment('{item.endtime}', 'DD-MM-YYYY');
-     */ const timer = (
+    const biller = (
+      <div>
+        {item.id ? (
+    <FormGroup>
+    <Label for="bill">Bill</Label>
+    <Input
+      type="text"
+      name="bill"
+      id="bill"
+      placeholder=""
+      value={item.bill|| this.getBill(item.typeid, item.starttime, item.endtime)}
+      onChange={this.handleChange}
+      autoComplete="bill"
+    />
+  </FormGroup>
+   ) : (
+    ""
+  )}
+</div>
+);
+    const timediffer = (
+      <div>
+        {item.id ? (
+      <FormGroup>
+      <Label for="timediff">Over Time</Label>
+      <Input
+        type="text"
+        name="timediff"
+        id="timediff"
+        placeholder=""
+        value={item.timediff||this.getTimeDiff(item.starttime, item.endtime)}
+        onChange={this.handleChange}
+        autoComplete="timediff"
+      />
+    </FormGroup>
+    ) : (
+      ""
+    )}
+  </div>
+);
+     const timer = (
       <div>
         {item.id ? (
           <FormGroup>
@@ -224,69 +328,34 @@ class CustomerEdit extends Component {
         )}
       </div>
     );
+    
     const endtimer = (
       <div>
         {item.id ? (
           <FormGroup>
             <Label for="endtime">End</Label>
-            <div className="row">
-              <div className="col">
-                <label>Initial</label>
-                <p className="form-control"> {timeEnd}</p>
-              </div>
-              <div className="col">
-                <label>Actual</label>
-
                 <Input
                   className="form-control"
                   type="datetime-local"
                   name="endtime"
                   id="endtime"
                   value={
-                    item.endtime || (
-                      <Moment
-                        name="timediff"
-                        className="form-control"
-                        diff={item.starttime}
-                        unit="hours"
-                      >
-                        {item.endtime}
-                      </Moment>
-                    )
+                    item.endtime || ""
                   }
                   onChange={this.handleChange}
-                  //  onClick={this.tariff(item.typeid, item.starttime, item.endtime)}
-
+                
                   autoComplete="endtime"
                 />
-              </div>
-              <div className="col">
-                <label>_</label>
-                {/*  <Button
-                className="form-control"
-                color="danger"
-                type="button" 
-                onClick={this.test(item.typeid.toString(), item.starttime, item.endtime)}
-              >
-                Calculate
-              </Button> */}
-                <Button
-                  className="form-control"
-                  color="danger"
-                  type="button"
-                  onClick={this.hello()}
-                >
-                  Calculate
-                </Button>
-              </div>
-            </div>
           </FormGroup>
+          
+        
         ) : (
           ""
         )}
       </div>
     );
 
+    
     let lotList =
       lotid.length > 0 &&
       lotid.map((item, i) => {
@@ -354,32 +423,11 @@ class CustomerEdit extends Component {
             </FormGroup>
             {timer}
             {endtimer}
+            {timediffer}
+          {biller}
+         
             <FormGroup>
-              <Label for="timediff">Total Hour(s)</Label>
-            </FormGroup>
-            <FormGroup>
-              <Moment
-                name="timediff"
-                className="form-control"
-                diff={item.starttime}
-                unit="hours"
-              >
-                {item.endtime}
-              </Moment>
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="bill">Bill</Label>
-              <Input
-                type="text"
-                name="bill"
-                id="bill"
-                value={item.bill || ""}
-                onChange={this.handleChange}
-                autoComplete="bill"
-              />
-            </FormGroup>
-            <FormGroup>
+           {/*  <Button  color="danger" type="button">Calculate</Button> */}
               <Button color="primary" type="submit">
                 Save
               </Button>{" "}
