@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { Button, Container, Form, FormGroup, Input, Label } from "reactstrap";
 import AppNavbar from "./AppNavbar";
+
 import "moment-timezone";
 import Moment from "react-moment";
-
+//import NameForm from "./NameForm";
 class CustomerEdit extends Component {
   emptyCustomer = {
     firstname: "",
@@ -12,16 +13,17 @@ class CustomerEdit extends Component {
     lotid: [],
     starttime: "",
     endtime: "",
-    timediff: "",
-    bill:"",
+    timediff: 0,
+    bill:0,
   };
   state = {
-    item: {
-        name: '',
-        price: '',
-        imageUrl: '',
-        description: '',
-      }
+    firstname: "",
+    typeid: "",
+    lotid: [],
+    starttime: "",
+    endtime: "",
+    timediff: "",
+    bill:"",
   }
   emptyType = {
     id: "",
@@ -39,24 +41,56 @@ class CustomerEdit extends Component {
     super(props);
    // let bill = JSON.parse(localStorage.getItem("bill"));
     this.state = {
-      item: this.emptyCustomer,
+      item: this.state,
       lotid: this.emptyLot,
-      typeid: this.emptyType
-      //  endtime: this.endTime,
+      typeid: this.emptyType,
+      bill:'',
+      active: false
+    // Binding this keyword 
+   
     };
+
+    
 
     
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this) 
+    this.toggle = this.toggle.bind(this) 
+  //  this.getTimeDiff = this.getTimeDiff.bind(this);
   }
+  toggle(event){
+    event.preventDefault();
+    this.setState({active: !this.state.active});
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    
+ 
+    let item = { ...this.state.item };
+    item[name] = value;
+    let lot = { ...this.state.lot };
+    let type = { ...this.state.type };
+    this.setState({ item, lot, type});
+ 
+    console.log([event.target.value]);
+    console.log(item)
+   // this.handleChange();
+ }
+
+
+
+    handleClick(e){ 
+      e.preventDefault();
+      // Changing state 
+      this.setState({bill : JSON.parse(window.localStorage.getItem("bill"))}) 
+    } 
 
   onClick = (e) => {
     e.preventDefault();
     this.setState({
         bill:JSON.parse(window.localStorage.getItem("bill"))
     })
-
-
 
     const getValue = (key, defaultValue = {}) => {
         try {
@@ -118,21 +152,18 @@ class CustomerEdit extends Component {
     
  
     let item = { ...this.state.item };
-   let bill = { ...this.state.item.bill };
     item[name] = value;
-    item[bill] = value;
-   // let bill = { ...this.state.bill };
     let lot = { ...this.state.lot };
     let type = { ...this.state.type };
     this.setState({ item, lot, type});
-    this.setState({ bill: event.target.value });
-    // this.tariff(this.typeid, this.quanTity);
-
+  
+    console.log([event.target.value]);
     console.log(item)
+    
   }
 
 
-  
+
 
   async handleSubmit(event) {
     event.preventDefault();
@@ -181,7 +212,7 @@ getBill(typeId, dates1, dates2){
     // eslint-disable-next-line no-const-assign
     bill = price;
     console.log("Bill", bill);
-   // localStorage.setItem("bill ", bill);
+    localStorage.setItem("bill", JSON.stringify(bill));
      return bill;
   }
 
@@ -199,7 +230,7 @@ getBill(typeId, dates1, dates2){
     console.log("Parked OT", parkedTime);
     console.log("Penalty", penalty);
     console.log("Bill", bill);
-  //  localStorage.setItem("bill ", bill);
+    localStorage.setItem("bill", JSON.stringify(bill));
      return bill;
   }
 
@@ -218,7 +249,7 @@ getBill(typeId, dates1, dates2){
     console.log("Parked OT", parkedTime);
     console.log("Penalty", penalty);
     console.log("Bill", bill);
-  //  localStorage.setItem("bill ", bill);
+   localStorage.setItem("bill", JSON.stringify(bill));
      return bill;
   }
   
@@ -238,7 +269,7 @@ getBill(typeId, dates1, dates2){
     console.log("Parked OT", parkedTime);
     console.log("Penalty", penalty);
     console.log("Bill", bill);
-  //  localStorage.setItem("bill ", bill);
+    localStorage.setItem("bill", JSON.stringify(bill));
      return bill;
   }
   
@@ -258,44 +289,80 @@ getBill(typeId, dates1, dates2){
     console.log("Parked OT", parkedTime);
     console.log("Penalty", penalty);
     console.log("Bill", bill);
-  //  localStorage.setItem("bill ", bill);
+    localStorage.setItem("bill", JSON.stringify(bill));
      return bill;
   }
 }
 
   render() {
+    
     const { item, lotid, typeid } = this.state;
     const timeStart = (
-      <Moment format="YYYY-MM-DD HH:mm" date={item.starttime} />
+      <Moment format="DD-MM-YYYY HH:mm" date={item.starttime} />
     );
    // const timediff = JSON.parse(localStorage.getItem("diff"));
 
-  //  const timeEnd = <Moment format="YYYY-MM-DD HH:mm" date={item.endtime} />;
+  //  const timeEnd =  <Moment format="DD-MM-YYYY HH:mm" date={item.endtime}/>;
     //const timestayed = timeEnd.diff(timeStart, 'days');
 
     const title = <h2>{item.id ? "Edit Customer" : "Add Customer"}</h2>; //const timestayed = discharge.diff(admission, 'days');
    
 
+    const biller2 = ( <div> 
+      
+        {item.id ? (
+           <FormGroup>
+      <Input
+                      type="text"
+                      name="bill"
+                      id="bill"
+                      value={item.bill ||this.state.bill }
+                      onChange={this.handleClick}
+                      autoComplete="bill"
+                    />
+              
+              <button onBlur={this.handleChange} onClick={this.handleClick}> 
+                Click here! 
+              </button> 
+              </FormGroup>
+        ) : (
+          ""
+        )}
+      </div>
+    );
+  
+        
     const biller = (
       <div>
         {item.id ? (
-    <FormGroup>
-    <Label for="bill">Bill</Label>
-    <Input
-      type="text"
-      name="bill"
-      id="bill"
-      placeholder=""
-      value={item.bill|| this.getBill(item.typeid, item.starttime, item.endtime)}
-      onChange={this.handleChange}
-      autoComplete="bill"
-    />
-  </FormGroup>
-   ) : (
-    ""
-  )}
-</div>
-);
+          <FormGroup>
+            <Label for="bill">Bill</Label>
+            <Input
+              type="text"
+              name="bill"
+              id="bill"
+              placeholder=""
+              value={
+                item.bill || this.getBill(item.typeid, item.starttime, item.endtime)
+              }
+             readOnly
+            //  onClick={this.handleChange}
+              onChange={this.handleChange}
+              autoComplete="bill"
+              className={ 
+                this.state.active ? "active" : "" 
+              }
+              onClick={event => this.toggle(event)}
+            />
+
+
+          {/*   <NameForm/> */}
+          </FormGroup>
+        ) : (
+          ""
+        )}
+      </div>
+    );
     const timediffer = (
       <div>
         {item.id ? (
@@ -306,8 +373,16 @@ getBill(typeId, dates1, dates2){
         name="timediff"
         id="timediff"
         placeholder=""
-        value={item.timediff||this.getTimeDiff(item.starttime, item.endtime)}
+        readOnly
+        value={item.timediff||this.getTimeDiff(item.starttime, item.endtime)||""}
+       // onChange={this.handleChange}
+      //  onClick={this.handleChange}
         onChange={this.handleChange}
+      
+        className={ 
+          this.state.active ? "active" : "" 
+        }
+        onClick={event => this.toggle(event)}
         autoComplete="timediff"
       />
     </FormGroup>
@@ -382,6 +457,8 @@ getBill(typeId, dates1, dates2){
         <Container>
           {title}
           <Form onSubmit={this.handleSubmit}>
+          <div className="row">
+            <div className="col">
             <FormGroup>
               <Label for="firstname">Vehicle No.</Label>
               <Input
@@ -393,6 +470,8 @@ getBill(typeId, dates1, dates2){
                 autoComplete="firstname"
               />
             </FormGroup>
+            </div>
+            <div className="col">
             <FormGroup>
               <Label for="lotid">Lot</Label>
               <select
@@ -406,7 +485,11 @@ getBill(typeId, dates1, dates2){
                 <option></option>
                 {lotList}
               </select>
+              
+            
             </FormGroup>
+            </div>
+            <div className="col">
             <FormGroup>
               <Label for="typeid">Type</Label>
               <select
@@ -421,13 +504,25 @@ getBill(typeId, dates1, dates2){
                 {typeList}
               </select>
             </FormGroup>
+            </div>
+            </div>
+            <div className="row">
+            <div className="col">
             {timer}
+            </div>
+            <div className="col">
             {endtimer}
+            </div>
+           
+           <div className="col">
             {timediffer}
+            </div>
+            </div>
           {biller}
-         
+       {/*   {biller2} */}
             <FormGroup>
-           {/*  <Button  color="danger" type="button">Calculate</Button> */}
+        
+          {/*  <Button  color="danger" onClick={this.handleChange} >Calculate</Button>  */}
               <Button color="primary" type="submit">
                 Save
               </Button>{" "}
