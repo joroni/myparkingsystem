@@ -50,6 +50,7 @@ class CustomerList extends Component {
         <td style={{whiteSpace: 'nowrap'}}>{customer.firstname}</td>
       
         <td>{lots[customer.lotid]}</td>
+        <td>{customer.spotid}</td>
         <td>{types[customer.typeid]}</td>
         <td><Moment format="YYYY-MM-DD HH:mm" date={customer.starttime} /></td>
         <td>{customer.endtime}</td>
@@ -79,6 +80,7 @@ class CustomerList extends Component {
                 <th width="20%">Vehicle No.</th>
                
                 <th width="10%">Lot</th>
+                <th width="10%">Spot</th>
                 <th width="20%">Type</th>
                 <th>Start</th>
                 <th>End</th>

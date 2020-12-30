@@ -12,11 +12,14 @@ exports.createSpot = (req, res) => {
     try{
         // Building Spot object from upoading request's body
         spot.name = req.body.name;
-    
+        spot.lotid = req.body.lotid;
+        spot.spotid = req.body.spotid;
+        spot.state = req.body.state;
+     
      
         // Save to MySQL database
         Spot.create(spot, 
-                          {attributes:['id','spotid','name','state']})
+                          {attributes:['id','lotid','spotid','name','state']})
                     .then(result => {    
                       res.status(200).json(result);
                     });
@@ -79,14 +82,16 @@ exports.updateSpot = async (req, res) => {
         if(!spot){
             // return a response to client
             res.status(404).json({
-                message: "Not Found for updating a spot with id = " + typeId,
+                message: "Not Found for updating a spot with id = " + spotId,
                 error: "404"
             });
         } else {    
             // update new change to database
             let updatedObject = {
+                lotid: req.body.lotid,
                 name: req.body.name,
-                spotid: req.body.spotid
+                spotid: req.body.spotid,
+                state: req.body.state
             }
             let result = await Spot.update(updatedObject,
                               { 
@@ -121,12 +126,12 @@ exports.updateSpot = async (req, res) => {
  */
 exports.deleteSpot = async (req, res) => {
     try{
-        let typeId = req.params.id;
-        let spot = await Spot.findByPk(typeId);
+        let spotId = req.params.id;
+        let spot = await Spot.findByPk(spotId);
 
         if(!spot){
             res.status(404).json({
-                message: "Does Not exist a Spot with id = " + typeId,
+                message: "Does Not exist a Spot with id = " + spotId,
                 error: "404",
             });
         } else {

@@ -51,3 +51,7 @@
 #bill.active {
     border: 2px solid green;
 }
+
+select[readonly] {
+    pointer-events: none;
+}

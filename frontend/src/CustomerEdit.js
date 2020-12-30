@@ -2,15 +2,23 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { Button, Container, Form, FormGroup, Input, Label } from "reactstrap";
 import AppNavbar from "./AppNavbar";
-
+import SampleReactSelect from "./SampleReactSelect";
+import Select from 'react-select';
 import "moment-timezone";
 import Moment from "react-moment";
 //import NameForm from "./NameForm";
+
+const sampleData = JSON.parse(localStorage.getItem("lotlisting"));
+
+const spotData = JSON.parse(localStorage.getItem("spotlisting"))
+
+console.log('spotData', spotData);
 class CustomerEdit extends Component {
   emptyCustomer = {
     firstname: "",
     typeid: "",
-    lotid: [],
+    lotid: "",
+    spotid: "",
     starttime: "",
     endtime: "",
     timediff: 0,
@@ -19,7 +27,8 @@ class CustomerEdit extends Component {
   state = {
     firstname: "",
     typeid: "",
-    lotid: [],
+    lotid: "",
+    spotid: "",
     starttime: "",
     endtime: "",
     timediff: "",
@@ -35,6 +44,12 @@ class CustomerEdit extends Component {
     name: "",
   };
 
+  emptySpot = {
+    id: "",
+    name: "",
+  };
+
+
   //endTime = "";
 
   constructor(props) {
@@ -43,9 +58,11 @@ class CustomerEdit extends Component {
     this.state = {
       item: this.state,
       lotid: this.emptyLot,
+      spotid: this.emptySpot,
       typeid: this.emptyType,
       bill:'',
-      active: false
+      active: false,
+      selected: false,
     // Binding this keyword 
    
     };
@@ -55,10 +72,16 @@ class CustomerEdit extends Component {
     
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleClick = this.handleClick.bind(this) 
-    this.toggle = this.toggle.bind(this) 
-  //  this.getTimeDiff = this.getTimeDiff.bind(this);
+    this.handleClick = this.handleClick.bind(this) ;
+    this.toggle = this.toggle.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
+    this.customFilter = this.customFilter.bind(this);
+   this.myFilterSpot = this.myFilterSpot.bind(this);
+   this.onSelectChange = this.onSelectChange.bind(this);
   }
+
+
+
   toggle(event){
     event.preventDefault();
     this.setState({active: !this.state.active});
@@ -79,6 +102,7 @@ class CustomerEdit extends Component {
  }
 
 
+ 
 
     handleClick(e){ 
       e.preventDefault();
@@ -122,27 +146,35 @@ class CustomerEdit extends Component {
       ).json();
       const lot = await (await fetch(`/api/lots`)).json();
       const type = await (await fetch(`/api/types`)).json();
-     // const bill = localStorage.getItem("bill");
-    //  const endtime = this.endtime;
-      //const starttime = this.starttime;
-      //const timediff = this.timediff;
-      //const bill = this.bill;
+      const spot = await (await fetch(`/api/spots`)).json();
       this.setState({
         item: customer,
         lotid: lot,
+        spotid: spot,
         typeid: type
       });
       // this.handleRelease();
-      
+      localStorage.setItem("lotlisting", JSON.stringify(lot));
+      localStorage.setItem("spotlisting", JSON.stringify(spot));
     }
     if (this.props.match.params.id === "new") {
       const lot = await (await fetch(`/api/lots`)).json();
       const type = await (await fetch(`/api/types`)).json();
+      const spot = await (await fetch(`/api/spots`)).json();
       this.setState({
         lotid: lot,
+        spotid: spot,
         typeid: type,
       });
+      localStorage.setItem("lotlisting", JSON.stringify(lot));
+      localStorage.setItem("spotlisting", JSON.stringify(spot));
+
+
+
+    //  const filteredData = spot.filter(item => item.lotid === 1);
+    //  console.log(filteredData);
     }
+   // localStorage.setItem('filteredSpots', '');
   }
 
   handleChange(event) {
@@ -156,7 +188,9 @@ class CustomerEdit extends Component {
     let lot = { ...this.state.lot };
     let type = { ...this.state.type };
     this.setState({ item, lot, type});
-  
+    this.setState({
+      timediff:event.target.value
+    })
     console.log([event.target.value]);
     console.log(item)
     
@@ -294,9 +328,71 @@ getBill(typeId, dates1, dates2){
   }
 }
 
+
+
+  // set selected value
+  handleSelect(val) {
+    this.setState({ selected: val });
+    console.log(val)
+    const filteredData = spotData.filter(item => item.lotid === val.id && item.state === 2);
+
+    console.log(filteredData);
+    this.setState({
+      spotid:filteredData
+    })
+   // localStorage.setItem('filteredSpots', JSON.stringify(filteredData));
+    //return filteredData;
+  }
+
+
+  selectMin(list){
+        var min = Math.min.apply(Math, list.map(function (o) {
+          return o.id;
+      }));
+    // eslint-disable-next-line array-callback-return
+    list.filter(function(elem){
+        if(elem.id === min){
+          console.log(elem);
+          return elem;}
+        })
+  }
+
+ 
+  onSelectChange = () => {
+    this.setState({
+      selected: !this.state.selected
+    });
+  };
+  myFilterSpot(searchTxt){
+
+    const filteredData = spotData.filter(item => item.lotid === searchTxt);
+    console.log(filteredData);
+
+    /* 
+    const myArray = JSON.parse(localStorage.getItem("spotlisting"))
+    const filteredData = myArray.filter(item => item.lotid === searchTxt); */
+    return filteredData;
+
+  }
+  //Add your search logic here.
+  customFilter(spotList, searchText) {
+    if (
+      spotList.data.name.toLowerCase().includes(searchText.toLowerCase()) 
+    ) {
+      console.log("searchtext", searchText);
+      const filteredData = spotData.filter(item => item.lotid === searchText.id);
+    console.log('filteredData', filteredData);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  
+  
   render() {
     
-    const { item, lotid, typeid } = this.state;
+    const { item, lotid, spotid, typeid } = this.state;
     const timeStart = (
       <Moment format="DD-MM-YYYY HH:mm" date={item.starttime} />
     );
@@ -307,31 +403,284 @@ getBill(typeId, dates1, dates2){
 
     const title = <h2>{item.id ? "Edit Customer" : "Add Customer"}</h2>; //const timestayed = discharge.diff(admission, 'days');
    
+//const fspot = this.myFilterSpot()
+let spotRadio =  spotid.length > 0 &&
+spotid.map((item, i) => {
+  return (
+   <div>
+<label>
+ {/*  <input type="radio" checked = {this.state.value === this.selectMin(spotid) }  key={i} value={item.spotid}
+  onClick={this.onChange} /> */}
+   <input type="radio" checked = {this.state.value === item.spotid }  key={i} value={item.spotid}
+  onClick={this.onSelectChange} onChange={this.handleChange} />
+   {item.name}
+</label> </div>  
+);
+}, this);
 
-    const biller2 = ( <div> 
-      
-        {item.id ? (
-           <FormGroup>
-      <Input
-                      type="text"
-                      name="bill"
-                      id="bill"
-                      value={item.bill ||this.state.bill }
-                      onChange={this.handleClick}
-                      autoComplete="bill"
-                    />
-              
-              <button onBlur={this.handleChange} onClick={this.handleClick}> 
-                Click here! 
-              </button> 
-              </FormGroup>
-        ) : (
-          ""
-        )}
-      </div>
-    );
+    let spotButton =
+    spotid.length > 0 &&
+    spotid.map((item, i) => {
+      return (
+        <Button color="primary" type="button" key={i} value={item.spotid}>
+                {item.name}
+              </Button>
+      );
+    }, this);
+
+    let lotList =
+    lotid.length > 0 &&
+    lotid.map((item, i) => {
+      return (
+        <option key={i} value={item.id}>
+          {item.name}
+        </option>
+      );
+    }, this);
+
+  let typeList =
+    typeid.length > 0 &&
+    typeid.map((item, i) => {
+      return (
+        <option key={i} value={item.id}>
+          {item.name}
+        </option>
+      );
+    }, this);
+
+
+    let spotList = 
+    spotid.length > 0 &&
+    spotid.map((item, i) => {
+      return (
+        <option key={i} value={item.id}>
+          {item.name}
+        </option>
+      );
+    }, this);
+
+   // let result = spotList.filter(t=>t.name === 'A');
+/* 
+    let spotFilteredList = spotData.filter(function (spotData) {
+      return spotData.faction === "";
+    }); */
+    
+    
+   
   
         
+
+    const vehicleNo = (
+      <div>
+      {item.id ? (
+      <FormGroup>
+      <Label for="firstname">Vehicle No.</Label>
+      <Input
+        type="text"
+        readOnly
+        name="firstname"
+        id="firstname"
+        value={item.firstname || ""}
+        onChange={this.handleChange}
+        autoComplete="firstname"
+      />
+    </FormGroup>
+     ) : (
+      <FormGroup>
+      <Label for="firstname">Vehicle No.</Label>
+      <Input
+        type="text"
+        name="firstname"
+        id="firstname"
+        value={item.firstname || ""}
+        onChange={this.handleChange}
+        autoComplete="firstname"
+      />
+    </FormGroup>
+    )}
+  </div>
+    );
+
+
+
+
+    const loter =(
+      <div>
+      {item.id ? (
+      <FormGroup>
+      <Label for="lotid">Lot</Label>
+      <select
+        multiple={false}
+        id="lotid"
+        readOnly
+        value={item.lotid}
+        name="lotid"
+        tabindex="-1"
+        onChange={this.handleChange}
+        className="form-control"
+      >
+        <option></option>
+        {lotList}
+      </select>
+    </FormGroup>
+    ) : (
+      <FormGroup>
+      <Label for="lotid">Lot</Label>
+      <select
+        multiple={false}
+        id="lotid"
+        value={item.lotid}
+        name="lotid"
+        onChange={this.handleChange}
+        className="form-control"
+      >
+        <option></option>
+        {lotList}
+      </select>
+    </FormGroup>
+    )}
+  </div>
+);
+
+
+
+
+const loter2 =(
+  <div>
+    {item.id ? (
+      <FormGroup>
+      <Label for="lotid">Lot</Label>
+      <Select
+       readOnly
+        className="react-selectcomponent"
+        classNamePrefix="name-select"
+        onChange={this.handleSelect}
+        getOptionLabel={option =>
+          `${option.name}`
+        }
+        getOptionValue={option => `${option}`}
+        isOptionSelected={option => {
+          // eslint-disable-next-line no-unused-expressions
+          this.state.selected.id === option.id ? true : false;
+        }}
+        value={item.lotid || ""}
+        options={sampleData}
+        isSearchable={true}
+        filterOption={this.customFilter}
+        onInputChange={this.handleInputChange}
+        noOptionsMessage={() => null}
+        placeholder={'Enter Name'}
+        autoFocus={true}
+        menuIsOpen={this.state.menuOpen}
+      />
+      </FormGroup>
+          ) : (
+            <FormGroup>
+            <Label for="lotid">Lot</Label>
+            <Select
+        className="react-selectcomponent"
+        classNamePrefix="name-select"
+        onChange={this.handleSelect}
+        getOptionLabel={option =>
+          `${option.name}`
+        }
+        value={item.lotid || ""}
+        getOptionValue={option => `${option}`}
+        isOptionSelected={option => {
+          // eslint-disable-next-line no-unused-expressions
+          this.state.selected.id === option.id ? true : false;
+        }}
+        options={sampleData}
+        isSearchable={true}
+        filterOption={this.customFilter}
+        onInputChange={this.handleInputChange}
+        noOptionsMessage={() => null}
+        placeholder={'Enter Name'}
+        autoFocus={true}
+        menuIsOpen={this.state.menuOpen}
+      />
+      </FormGroup>
+      )}
+    </div>  
+);
+
+const spotNo = (
+  <div>
+  {item.id ? (
+  <FormGroup>
+  <Label for="spotid">Spot</Label>
+  <select
+    tabindex="-1"
+    readOnly
+    multiple={false}
+    id="spotid"
+    value={item.spotid}
+    name="spotid"
+    onChange={this.handleChange}
+    className="form-control"
+  >
+    <option></option>
+    {spotList}
+  </select>
+</FormGroup>
+ ) : (
+  <FormGroup>
+  <Label for="spotid">Spot</Label>
+  <select
+    multiple={false}
+    id="spotid"
+    value={item.spotid}
+    name="spotid"
+    onChange={this.handleChange}
+    className="form-control"
+  >
+   
+    {spotList}
+  </select>
+</FormGroup>
+)}
+</div>
+);
+
+
+const typer =(
+  <div>
+  {item.id ? (
+  <FormGroup>
+  <Label for="typeid">Type</Label>
+  <select
+    multiple={false}
+    id="typeid"
+    readOnly
+    value={item.typeid}
+    name="typeid"
+    tabindex="-1"
+    onChange={this.handleChange}
+    className="form-control"
+  >
+    <option></option>
+    {typeList}
+  </select>
+</FormGroup>
+) : (
+  <FormGroup>
+  <Label for="typeid">Type</Label>
+  <select
+    multiple={false}
+    id="typeid"
+    value={item.typeid}
+    name="typeid"
+    onChange={this.handleChange}
+    className="form-control"
+  >
+    <option></option>
+    {typeList}
+  </select>
+</FormGroup>
+)}
+</div>
+);
+
     const biller = (
       <div>
         {item.id ? (
@@ -431,85 +780,36 @@ getBill(typeId, dates1, dates2){
     );
 
     
-    let lotList =
-      lotid.length > 0 &&
-      lotid.map((item, i) => {
-        return (
-          <option key={i} value={item.id}>
-            {item.name}
-          </option>
-        );
-      }, this);
-
-    let typeList =
-      typeid.length > 0 &&
-      typeid.map((item, i) => {
-        return (
-          <option key={i} value={item.id}>
-            {item.name}
-          </option>
-        );
-      }, this);
-
+ 
     return (
       <div>
         <AppNavbar />
         <Container>
           {title}
           <Form onSubmit={this.handleSubmit}>
+            <SampleReactSelect />
           <div className="row">
             <div className="col">
-            <FormGroup>
-              <Label for="firstname">Vehicle No.</Label>
-              <Input
-                type="text"
-                name="firstname"
-                id="firstname"
-                value={item.firstname || ""}
-                onChange={this.handleChange}
-                autoComplete="firstname"
-              />
-            </FormGroup>
+           {vehicleNo}
             </div>
             <div className="col">
-            <FormGroup>
-              <Label for="lotid">Lot</Label>
-              <select
-                multiple={false}
-                id="lotid"
-                value={item.lotid}
-                name="lotid"
-                onChange={this.handleChange}
-                className="form-control"
-              >
-                <option></option>
-                {lotList}
-              </select>
-              
-            
-            </FormGroup>
+            {loter2} {spotRadio}
             </div>
             <div className="col">
-            <FormGroup>
-              <Label for="typeid">Type</Label>
-              <select
-                multiple={false}
-                id="typeid"
-                value={item.typeid}
-                name="typeid"
-                onChange={this.handleChange}
-                className="form-control"
-              >
-                <option></option>
-                {typeList}
-              </select>
-            </FormGroup>
+            {spotNo}
             </div>
             </div>
+
+            <div className="row">
+            <div className="col">
+            {typer}
+            </div>
+           </div>
+
             <div className="row">
             <div className="col">
             {timer}
-            </div>
+           </div>
             <div className="col">
             {endtimer}
             </div>
@@ -518,11 +818,48 @@ getBill(typeId, dates1, dates2){
             {timediffer}
             </div>
             </div>
+            <div className="row">
+            <div className="col">   
           {biller}
-       {/*   {biller2} */}
+          </div>
+          </div>
+
+
+     {/*      <div className="row">
+        <div className="col-md-12">
+          <div className="row">
+            <div className="col-md-4">
+              <span>Select Name</span>
+              <Select
+                className="react-selectcomponent"
+                classNamePrefix="name-select"
+                onChange={this.handleSelect}
+                getOptionLabel={option =>
+                  `${option.name}`
+                }
+                getOptionValue={option => `${option}`}
+                isOptionSelected={option => {
+                  // eslint-disable-next-line no-unused-expressions
+                  this.state.selected.id === option.id ? true : false;
+                }}
+                options={sampleData}
+                isSearchable={true}
+                filterOption={this.customFilter}
+                onInputChange={this.handleInputChange}
+                noOptionsMessage={() => null}
+                placeholder={'Enter Name'}
+                autoFocus={true}
+                menuIsOpen={this.state.menuOpen}
+              />
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+{spotRadio} */}
             <FormGroup>
-        
-          {/*  <Button  color="danger" onClick={this.handleChange} >Calculate</Button>  */}
+          
               <Button color="primary" type="submit">
                 Save
               </Button>{" "}

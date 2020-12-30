@@ -8,6 +8,9 @@ module.exports = (sequelize, Sequelize) => {
     firstname: {
       type: Sequelize.STRING,
     },
+    spotid: {
+      type: Sequelize.STRING,
+    },
     typeid: {
       type: Sequelize.INTEGER,
     },

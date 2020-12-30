@@ -43,11 +43,11 @@ db.sequelize.sync({force: true}).then(() => {
   Customer.sync().then(() => {
     const customers = [
       { firstname: 'SED1111', typeid: 1, 
-                lotid: 1, starttime: dt, endtime: ''},
+                lotid: 1, starttime: dt, spotid:'1', endtime: ''},
       { firstname: 'SUV1111', typeid: 2, 
-                lotid: 2,starttime: dt, endtime: ''},
+                lotid: 1,starttime: dt,spotid:'2', endtime: ''},
       { firstname: 'VAN111', typeid: 3, 
-                lotid: 3,starttime: dt,  endtime: ''},
+                lotid: 1,starttime: dt,spotid:'3',  endtime: ''},
     ]
     
     for(let i=0; i<customers.length; i++){
@@ -85,10 +85,17 @@ db.sequelize.sync({force: true}).then(() => {
   
   Spot.sync().then(() => {
     const spots = [
-      {id:1, lotid:1,name: 'A1', spotid:1, state:0},
-      {id:2, lotid:1,name: 'A2', spotid:2, state:0},
-      {id:3, lotid:1, name: 'A3', spotid:3, state:0},
+      {id:1, lotid:1,name: 'A1', spotid:1, state:1},
+      {id:2, lotid:1,name: 'A2', spotid:2, state:1},
+      {id:3, lotid:1, name: 'A3', spotid:3, state:1},
+      {id:4, lotid:2,name: 'B1', spotid:1, state:2},
+      {id:5, lotid:2,name: 'B2', spotid:2, state:2},
+      {id:6, lotid:2, name: 'B3', spotid:3, state:2},
+      {id:7, lotid:3,name: 'C1', spotid:1, state:2},
+      {id:8, lotid:3,name: 'C2', spotid:2, state:2},
+      {id:9, lotid:3, name: 'C3', spotid:3, state:2},
     ]
+    
     
     for(let l=0; l<spots.length; l++){
       Spot.create(spots[l]);

@@ -39,7 +39,7 @@ class SpotList extends Component {
     //const dateToFormat = new Date();
     
     const {spots, isLoading} = this.state;
-
+    const states = ["", "Occupied", "Available", "LP"];
     if (isLoading) {
       return <p>Loading...</p>;
     }
@@ -50,7 +50,7 @@ class SpotList extends Component {
       
        
         <td>{spot.spotid}</td>
-        <td>{spot.state}</td>
+        <td>{states[spot.state]}</td>
         <td>
           <ButtonGroup>
             <Button size="sm" color="primary" tag={Link} to={"/spots/" + spot.id}>Edit</Button>

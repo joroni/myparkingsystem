@@ -11,6 +11,7 @@ class SpotEdit extends Component {
 
   emptySpot = {
     name: "",
+    lotid:[],
     spotid:"",
     state:""
   };
@@ -22,12 +23,17 @@ class SpotEdit extends Component {
   };
 
 
+  emptyState = {
+    id: "",
+    name: "",
+  };
+
+
   constructor(props) {
     super(props);
     this.state = {
       item: this.emptySpot,
       lotid: this.emptyLot,
-      state:[],
       selectedOption: null
     };
     this.handleChange = this.handleChange.bind(this);
@@ -40,18 +46,30 @@ class SpotEdit extends Component {
         await fetch(`/api/spot/${this.props.match.params.id}`)
       ).json();
       const lot = await (await fetch(`/api/lots`)).json();
-      
-
-      this.setState({ 
+    
+      this.setState({
         item: spot,
         lotid: lot
       });
+      // this.handleRelease();
       
-      console.log(spot);
-     // this.handleChanges();
-    
+    }
+    if (this.props.match.params.id === "new") {
+    //  const spot = await (await fetch(`/api/spots`)).json();
+      const lot = await (await fetch(`/api/lots`)).json();
+      this.setState({
+        lotid: lot,
+       
+      });
     }
   }
+   
+
+
+    
+  
+
+  
 
   
   handleChange(event) {
@@ -60,10 +78,19 @@ class SpotEdit extends Component {
     const label = target.name;
     const name = target.name;
     let item = { ...this.state.item };
+
+    item[name] = value;
+    let lot = { ...this.state.lot };
+    this.setState({ item, lot});
+  
+    console.log([event.target.value]);
+   
+
     let selectedOption =  { ...this.state.selectedOption };
     selectedOption[name] = label;
     item[name] = value;
-    this.setState({ item, selectedOption });
+    this.setState({ item });
+    console.log(item);
   }
 
   async handleSubmit(event) {
@@ -78,16 +105,22 @@ class SpotEdit extends Component {
       body: JSON.stringify(item),
     });
     this.props.history.push("/spots");
+    console.log(item);
   }
 
   render() {
-    // this.selectedOption = this.state;
+     this.selectedOption = this.state;
     const { item, lotid } = this.state;
     const title = <h2>{item.id ? "Edit Spot" : "Add Spot"}</h2>;
-    const states =  [{id: '1', name: 'Active'},
-    {id: '0', name: 'InActive'}];
+    const states =  [
+      {id: 1, name: 'Occupied'},
+      {id: 2, name: 'Available'}];
 
-    let lotList = lotid.length > 0 && lotid.map((item, i) => {
+ 
+
+    let lotList =
+    lotid.length > 0 &&
+    lotid.map((item, i) => {
       return (
         <option key={i} value={item.id}>
           {item.name}
@@ -95,11 +128,10 @@ class SpotEdit extends Component {
       );
     }, this);
 
-     
     
     let stateList = states.length > 0 && states.map((item, i) => {
     return (
-      <option key={i} value={item.id}>{item.name}</option>
+      <option key={i} value={parseInt(item.id)}>{item.name}</option>
     )
   }, this);
 
@@ -116,7 +148,7 @@ class SpotEdit extends Component {
               <Label for="lotid">Lot</Label>
               <select
                 id="lotid"
-                value={item.lotid}
+                value={item.lotid||""}
                 name="lotid"
                 onChange={this.handleChange}
                 className="form-control"
@@ -148,11 +180,33 @@ class SpotEdit extends Component {
                 autoComplete="spotid"
               />
             </FormGroup>
-            <FormGroup>
+           {/*  <FormGroup>
               <Label for="state">State</Label>
               <select
                 id="state"
-                value={item.state}
+                value={item.state||""}
+                name="state"
+                onChange={this.handleChange}
+                className="form-control"
+              >
+                <option></option>
+                {stateList}
+              </select>
+            </FormGroup> */}
+             <FormGroup>
+              <Label for="state">State</Label>
+             
+            {/*   <Input
+                type="number"
+                name="state"
+                id="state"
+                value={item.state||""}
+                onChange={this.handleChange}
+                autoComplete="state"
+              /> */}
+                <select
+                id="state"
+                value={item.state||""}
                 name="state"
                 onChange={this.handleChange}
                 className="form-control"
@@ -161,7 +215,6 @@ class SpotEdit extends Component {
                 {stateList}
               </select>
             </FormGroup>
-            
             <FormGroup>
               <Button color="primary" type="submit">
                 Save
